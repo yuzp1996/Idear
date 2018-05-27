@@ -83,8 +83,21 @@
             content = jsonData.Content.split('$')
 
             if(jsonData.Priority == "0"){
+
                 var type = "项目招募" 
-                var agree = " <div align='right'><button applyid="+content[1]+" id='agree' class='btn btn-info btn-xs examine' align='center'>同意</button> <button class='btn btn-danger btn-xs delete' applyid="+content[1]+" >不同意</button></div>"
+                var isagree = ""
+                alert(jsonData.status)
+                if(jsonData.status == 3){
+                    var isagree = "已同意"
+                }else if(jsonData.status == 2){
+                    var isagree = "已拒绝"
+                }
+                if (isagree == ""){
+                    var agree = "<div align='right'><button applyid="+content[1]+" id='agree' class='btn btn-info btn-xs examine' align='center'>同意</button> <button class='btn btn-danger btn-xs delete' id='disagree' applyid="+content[1]+" >不同意</button></div>"
+                }else{
+                    var agree ="<div align='right'><h1>"+isagree+"</h1></div>"
+                }
+
             }else{
                 var type= "关注点赞"
             }
@@ -107,13 +120,35 @@
 $('body').on('click', '#agree', function(){
 
     var applyid = $(this).attr('applyid')
-    $.post("answermessage",{"applyid":applyid},function (data) {
-        alert("good")
+    $.post("answermessage",{"applyid":applyid, "type":"agree"},function (data) {
         alert(data)
+        window.location.reload()
+
 
     })
 
 })
+
+$('body').on('click', '#disagree', function(){
+
+    var applyid = $(this).attr('applyid')
+    $.post("answermessage",{"applyid":applyid, "type":"disagree"},function (data) {
+        alert(data)
+        window.location.reload()
+
+
+    })
+
+})
+
+$(".delete").click(function() {
+    var messageid = $(this).attr('value')
+    $.post("answermessage",{"messageid":messageid, "type":"delete"},function (data) {
+        alert(data)
+        window.location.reload()
+    })
+})
+
 
 </script>
 {% endblock %}

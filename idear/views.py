@@ -1170,7 +1170,7 @@ def redetails(req):
     if req.method == 'GET':
         projectId = req.GET['projectId']
         project = models.Project.objects.get(Id=projectId)
-        user = models.ProjectUser.objects.get(project_id=projectId)
+        user = models.ProjectUser.objects.get(project_id=projectId,Identity=1)
         labels = models.Project2ProjectLabel.objects.filter(project_id=projectId)
         comments = models.Comment.objects.filter(project_id=projectId).order_by("-Date")
         commentlist = []
@@ -1917,6 +1917,9 @@ def show_messages(req):
     list['Date'] = infoId.Date.strftime("%Y/%m/%d")
     list['Priority'] = infoId.Priority
     list['Content'] = infoId.Content
+    if len(list['Content'].split('$'))>1:
+        applyid = list['Content'].split('$')[1]
+        list['status']=models.Apply.objects.get(Id=applyid).State
     return HttpResponse(json.dumps(list))
 
 
@@ -1990,11 +1993,29 @@ def read_message(req):
 def answermessage(req):
     '''
     回复招募信息
+    应该创建相应的回复message
     '''
-    applyId = req.POST["applyid"]
-    print applyId
-    models.Apply.objects.get(Id=applyId)
-    return HttpResponse(json.dumps(applyId)) 
+    result = 'Failed'
+    if req.POST["type"] == "agree":
+        applyId = req.POST["applyid"]
+        apply = models.Apply.objects.get(Id=applyId)
+        apply.State = 3
+        apply.save()
+        models.Message.objects.create(user=apply.user, Content='你的请求：['+apply.Describe[0:50]+'...] 已经被同意 '+'$'+applyId) 
+        models.ProjectUser.objects.create(user=apply.user, project=apply.recruit.project, Identity=0)
+        result = 'Success'
+
+    elif req.POST["type"] == 'delete':
+        messageid = req.POST['messageid']
+        models.Message.objects.get(Id=messageid).delete()
+        result = 'Success'
+    else:
+        applyId = req.POST["applyid"]
+        apply = models.Apply.objects.get(Id=applyId)
+        apply.State = 2
+        apply.save()
+        result = 'Success' 
+    return HttpResponse(json.dumps(result)) 
 
 
 
