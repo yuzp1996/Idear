@@ -78,22 +78,113 @@
 
 <script>
     $(".examine").click(function() {
+
+
+
         var infoId = $(this).val();
+
         $.post("show_messages",{"infoId":infoId},function (data) {
-            var jsonData = $.parseJSON(data);
+            var jsonData = $.parseJSON(data);   
+            var agree = ""
+            content = jsonData.Content.split('$')
+
+            if(jsonData.Priority == "0"){
+
+                var type = "项目招募" 
+                var isagree = ""
+                if(jsonData.status == 3){
+                    var isagree = "已同意"
+                }else if(jsonData.status == 2){
+                    var isagree = "已拒绝"
+                }
+                if (isagree == ""){
+                    var agree = "<div align='right'><button applyid="+content[1]+" id='agree' class='btn btn-info btn-xs examine' align='center'>同意</button> <button class='btn btn-danger btn-xs delete' id='disagree' applyid="+content[1]+" >不同意</button></div>"
+                }else{
+                    var agree ="<div align='right'><h1>"+isagree+"</h1></div>"
+                }
+
+            }else{
+                var type= "关注点赞"
+            }
             var str = "";
             str += "<div class='modal-body'>";
             str += "时间：" + jsonData.Date + "<br><br>";
-            str += "消息类型：" + jsonData.Priority +"<br><br>";
-            str += "消息内容：" + jsonData.Content + "<br><br>";
+            str += "消息类型：" + type +"<br><br>";
+            str += "消息内容：" + content[0] + "<br><br>";
+            str += agree
             $(".modal-body").empty().append(str);
         });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         $.post("unread_read",{"infoId":infoId},function (result) {
             result = JSON.parse(result);
             if(result.status === 0){
                 alert("查看失败！");
             }
         })
+
+
+
+
+
+
+
+
+
+
+
+
     })
+</script>
+
+
+
+<script>
+
+$('body').on('click', '#agree', function(){
+
+    var applyid = $(this).attr('applyid')
+    $.post("answermessage",{"applyid":applyid, "type":"agree"},function (data) {
+        alert(data)
+        window.location.reload()
+
+
+    })
+
+})
+
+$('body').on('click', '#disagree', function(){
+
+    var applyid = $(this).attr('applyid')
+    $.post("answermessage",{"applyid":applyid, "type":"disagree"},function (data) {
+        alert(data)
+        window.location.reload()
+
+
+    })
+
+})
+
+$(".delete").click(function() {
+    var messageid = $(this).attr('value')
+    $.post("answermessage",{"messageid":messageid, "type":"delete"},function (data) {
+        alert(data)
+        window.location.reload()
+    })
+})
+
+
 </script>
 {% endblock %}
