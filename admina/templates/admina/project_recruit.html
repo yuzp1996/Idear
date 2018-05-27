@@ -1,0 +1,209 @@
+{% extends '../base/base.html' %}
+
+{% block title %}Admin-Index{% endblock %} {# title #}
+{% block css %}
+<!--file upload-->
+<link rel="stylesheet" type="text/css" href="/static/css/bootstrap-fileupload.min.css" />
+
+<link rel="stylesheet" type="text/css" href="/static/js/bootstrap-datepicker/css/datepicker-custom.css" />
+
+<!-- include libraries(jQuery, bootstrap) -->
+<link rel="stylesheet" type="text/css" href="/static/js/bootstrap-wysihtml5/bootstrap-wysihtml5.css" />
+{# css #}
+
+{% endblock %}
+
+{% block heading %}   {# heading #}
+<ul class="breadcrumb">
+    <h3>项目管理</h3>
+    <li>
+        <a href="">项目名称</a>
+    </li>
+    <li class="active">新增招募</li>
+</ul>
+{% endblock %}
+
+{% block body %}
+<div class="row">
+    <div class="col-lg-12">
+        <section class="panel">
+            <header class="panel-heading">
+                招募添加
+            </header>
+            <div class="panel-body">
+                <div class="form">
+                    <form class="cmxform form-horizontal adminex-form" id="signupForm" >
+                        <div class="form-group ">
+                            <label for="firstname" class="control-label col-lg-2">项目名称</label>
+                            <div class="col-lg-5">
+                                <select class="form-control m-bot15" id="recruit_project">
+                                    {% for project in Projects %}
+                                        <option value="{{ project.Id }}">{{ project.ProjectName }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group ">
+                            <label for="timepicker" class="control-label col-lg-2">招募开始时间</label>
+                            <div class="col-md-5 col-xs-11">
+                                <input class="form-control form-control-inline input-medium default-date-picker"  size="16" type="text" value=""  id="recruit_start_time"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label col-lg-2" >招募状态</label>
+                            <div class="col-lg-10">
+                                <label class="checkbox-inline">
+                                    <input type="radio" name="recruit_state" value="0"> 未开始
+                                </label>
+                                <label class="checkbox-inline">
+                                    <input type="radio" name="recruit_state" value="1"> 初期招募
+                                </label>
+                                <label class="checkbox-inline">
+                                    <input type="radio" name="recruit_state" value="2"> 二次招募
+                                </label>
+                                <label class="checkbox-inline">
+                                    <input type="radio" name="recruit_state" value="3"> 招募结束
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group ">
+                            <label for="timepicker2" class="control-label col-lg-2">招募结束时间</label>
+                            <div class="col-md-5 col-xs-11">
+                                <input class="form-control form-control-inline input-medium default-date-picker"  size="16" type="text" value=""  id="recruit_end_time"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label col-lg-2" >是否可用</label>
+                            <div class="col-lg-10">
+                                <label class="checkbox-inline">
+                                    <input type="radio" name="is_use" value="0">可用
+                                </label>
+                                <label class="checkbox-inline">
+                                    <input type="radio" name="is_use" value="1"> 不可用
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="email" class="control-label col-lg-2">预计招募人数</label>
+                            <div class="col-md-5 col-xs-11">
+                                <input class="form-control form-control-inline input-medium" type="number" value="" id="recruit_predict_number"/>
+                            </div>
+                        </div>
+                        <div class="form-group ">
+                            <label for="email" class="control-label col-lg-2">已招募人数</label>
+                            <div class="col-md-5 col-xs-11">
+                                <input class="form-control form-control-inline input-medium" type="number" value="" id="recruit_number"/>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <section class="panel">
+            <header class="panel-heading">
+                招募描述
+            </header>
+            <div class="panel-body">
+                <div class="form-group">
+                        <div class="col-md-12">
+                            <textarea class="wysihtml5 form-control" rows="9"></textarea>
+                        </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-lg-10" >
+                        <div class="col-md-5 col-xs-11 ">
+                            <button class="btn btn-primary center" id="submit_btn" type="submit">保存</button>
+                        </div>
+                        <div class="col-md-5 col-xs-11">
+                            <button class="btn btn-default center" id="cancle" type="button">取消</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+{# body #}
+
+{% endblock %}
+
+
+{% block midscript %}   {# midescript #}
+<script ype="text/javascript" src="/static/js/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
+<script ype="text/javascript" src="/static/js/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js"></script>
+<script ype="text/javascript" src="/static/js/bootstrap-daterangepicker/moment.min.js"></script>
+
+    {% comment %} bootstrap-wysihtml {% endcomment %}
+<script type="text/javascript" src="/static/js/bootstrap-wysihtml5/wysihtml5-0.3.0.js"></script>
+<script type="text/javascript" src="/static/js/bootstrap-wysihtml5/bootstrap-wysihtml5.js"></script>
+
+
+<script src="/static/js/pickers-init.js"></script>
+{% endblock %}
+
+{% block lastscript %}  {# lastscript #}
+<script>
+    // 初始化富文本
+jQuery(document).ready(function(){
+    $('.wysihtml5').wysihtml5();
+
+
+
+     // 提取数据
+    $("#submit_btn").click(function () {
+        var recruit_project = $('#recruit_project').val()
+        var recruit_start_time = $('#recruit_start_time').val()
+        var recruit_state = $("input[name='recruit_state']:checked").val();
+        var recruit_end_time = $('#recruit_end_time').val()
+        var is_use = $("input[name='is_use']:checked").val();
+        var recruit_predict_number = $('#recruit_predict_number').val()
+        var recruit_number = $('#recruit_number').val()
+        var recruit_describe = $('.wysihtml5').val()
+
+        // 封装数据
+        var data = new FormData();
+        data.append('recruit_project', recruit_project)
+        data.append('recruit_start_time', recruit_start_time)
+        data.append('recruit_state', recruit_state)
+        data.append('recruit_end_time', recruit_end_time)
+        data.append('is_use', is_use)
+        data.append('recruit_predict_number', recruit_predict_number)
+        data.append('recruit_number', recruit_number)
+        data.append('recruit_describe', recruit_describe)
+
+        // 提交数据
+        $.ajax({
+            url: 'recruit',
+            type: 'POST',
+            data: data,
+            cache: false,
+            processData: false,
+            contentType: false,
+            success:function(data){
+                data = JSON.parse(data)
+                if(data.status === 1){
+                    alert("保存成功");
+                    window.location.href = "http://127.0.0.1:8000/admina/project/recmanage";
+                }else {
+                    alert(data.message);
+                }
+            },
+            error:function () {
+                alert("服务器异常");
+            }
+        });
+    });
+
+    $('#cancle').click(function(){
+            window.history.go(-1);
+     })
+});
+
+
+
+</script>
+{% endblock %}

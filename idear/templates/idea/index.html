@@ -1,0 +1,306 @@
+{% extends 'idea/Base.html'%}
+{% load static %}
+{%block title%}
+    <title>首页</title>
+{%endblock%}
+{%block CSS%}
+    <link rel="stylesheet" href="{% static 'base/css/bootstrap.min.css'%}">
+    <link rel="stylesheet" href="{% static 'idea/css/index.css'%}">
+    <link rel="stylesheet" href="{% static 'base/css/base.css'%}">
+
+{%endblock%}
+{%block script%}
+
+{%endblock%}
+{%block content%}
+<!--轮播开始-->
+<div id="myCarousel" class="carousel slide top-content-information">
+    <ol class="carousel-indicators">
+        <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+        <li data-target="#myCarousel" data-slide-to="1"></li>
+        <li data-target="#myCarousel" data-slide-to="2"></li>
+    </ol>
+    <div class="carousel-inner" role="listbox">
+        <div class="item active" >
+            <img src="{% static 'idea/imgs/bg_top.jpg'%}" >
+            <div class="img_words">
+                <h3>抛下书本上街去，即兴舞一支Pantsul</h3>
+                <div class="words_line"></div>
+            </div>
+        </div>
+        <div class="item">
+            <img src="{% static 'idea/imgs/bg_top1.jpg'%}">
+            <div class="img_words">
+                <h3>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;这种舞蹈诞生于贫民区，具有鲜明的政治色彩</h3>
+            </div>
+        </div>
+        <div class="item">
+            <img src="{% static 'idea/imgs/night_img.png'%}">
+            <div class="img_words">
+                <h3>通过这个实验</h3>
+                <h3>你会发现，当你开始聆听音乐时</h3>
+                <div class="words_line_3"></div>
+            </div>
+        </div>
+    </div>
+    <a class="carousel-control left top-content-control-left" href="#myCarousel" data-slide="prev"></a>
+    <a class="carousel-control right top-content-control-right" href="#myCarousel" data-slide="next"></a>
+</div>
+<!--轮播结束-->
+    <!--主要内容开始-->
+<div class="middle">
+	<div class="content">
+		<div class="top-content">
+            <div class="content-information">
+            </div>
+        </div>
+		<div class="main-content">
+        <!--介绍开始-->
+			<div class="main-box">
+				<div class="box-one-left">
+					<h2>WHAT<small>are we doing</small></h2>
+				</div>
+				<div class="usage">
+                    <div class="usage_one">
+                        <a href="projects?sign=all">
+                            <div class="usage_img_one usage_img">创作</div>
+                        </a>
+                        <div class="usage_content">
+                            <div class="contOne">
+                                <p class="smart">人才--|</p>
+                                <p class="purpose">为项目提供所需人才</p>
+                            </div>
+                            <div class="contOne">
+                                <p class="smart">资源--|</p>
+                                <p class="purpose">为项目提供所需资源</p>
+                            </div>
+                            <div class="contOne">
+                                <p class="smart">服务--|</p>
+                                <p class="purpose">为项目提供周到服务</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="usage_one">
+                        <a href="creations?sign=all">
+                            <div class="usage_img_two usage_img">分享</div>
+                        </a>
+                        <div class="usage_content createPropuse">
+                            <p>创意分享</p>
+                            <p>灵感变现</p>
+                            <p>平台推广</p>
+                        </div>
+                    </div>
+                    <div class="usage_one">
+                        <a href="team?sign=all">
+                            <div class="usage_img_three usage_img">合作</div>
+                        </a>
+                        <div class="usage_content">
+                            <div class="contOne">
+                                <p class="smart">虚拟平台</p>
+                                <p class="purpose">功能强大的在线平台</p>
+                            </div>
+                            <div class="contOne">
+                                <p class="smart">团队常驻</p>
+                                <p class="purpose">有效利用现有团队</p>
+                            </div>
+                            <div class="contOne">
+                                <p class="smart">资源整合</p>
+                                <p class="purpose">实时提供创作资源</p>
+                            </div>
+                        </div>
+                    </div>
+				</div>
+			</div>
+        <!--介绍结束-->
+        <!--项目排名开始-->
+            <div class="best_find">
+                <div class="line_one"></div>
+
+                <div class="box-one-left">
+					<h2>WEEKLY<small>praise list</small></h2>
+				</div>
+
+                <div class="thumbs-up">
+                    <div class="best_project">
+                        <div class="pro">
+                        {% if proBest.Statue == 1 or proBest.Statue == 3 %}
+                        <a href="redetails?projectId={{ proBest.Id }}">
+                            <div class="pro_left_img">
+                                <img src="/static/photos/{{ proBest.Img}}">
+                            </div>
+                        </a>
+                        {% else %}
+                        <a href="dedetails?projectId={{ proBest.Id }}">
+                            <div class="pro_left_img">
+                                <img src="/static/photos/{{ proBest.Img}}">
+                            </div>
+                        </a>
+                        {% endif %}
+                            <div class="pro_content">
+                                <div class="pro_label">
+                                    <a href="#" >
+                                    {%for label in labels%}
+                                        {% if label.project.Id == proBest.Id %}
+                                        <p>{{label.projectLabel.ProjectLabelName}}</p>
+                                        {% endif %}
+                                    {% endfor %}
+                                    </a>
+                                </div>
+                                <div class="pro_name">
+                                    {% if proBest.Statue == 1 or proBest.Statue == 3 %}
+                                    <a href="redetails?projectId={{ proBest.Id }}"><p>{{ proBest.ProjectName }}</p></a>
+                                    {% else %}
+                                    <a href="dedetails?projectId={{ proBest.Id }}"><p>{{ proBest.ProjectName }}</p></a>
+                                    {% endif %}
+                                </div>
+                                <div class="pro_introduce">
+                                    {% if proBest.Statue == 1 or proBest.Statue == 3 %}
+                                    <p>招募项目</p>
+                                    {% else %}
+                                    <p>开发项目</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="pro_line"></div>
+                            <div class="pro_best">
+                                <ul>
+                                    <li>
+                                        <div class="pro_comment"></div>
+                                        <div class="comment_num"><p>{{ proBest.Comment_Project_set.count  }}</p></div>
+                                    </li>
+                                    <li>
+                                        <div class="pro-thumbs-up"></div>
+                                        <div class="thumbs-up-num"><p>{{ proBest.Praise_Project_set.count  }}</p></div>
+                                    </li>
+                                    <li>
+                                        <div class="pro-collection"></div>
+                                        <div class="collection-num"><p>{{ proBest.Follow_Project_set.count  }}</p></div>
+                                    </li>
+                                </ul>
+                                <div class="pro_by">
+                                    {% for user in users %}
+                                        {% if user.project.Id == proBest.Id %}
+                                        <div class="pro_no2_user"><p>by&nbsp;<a href="#">{{ user.user.UserName }}</a></p></div>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="middle_line"></div>
+                <div class="collection">
+                    <div class="collection_no2">
+                        <div class="best_project">
+                            <div class="pro">
+                            {% if proTwo.Statue == 1 or proTwo.Statue == 3 %}
+                                <a href="redetails?projectId={{ proTwo.Id }}">
+                                    <div class="pro_right_img">
+                                        <img src="/static/photos/{{ proTwo.Img}}">
+                                    </div>
+                                </a>
+                                <div class="pro_no2">
+                                    <a href="redetails?projectId={{ proTwo.Id }}">
+                                        <div class="pro_no2_name">
+                                            <p>{{ proTwo.ProjectName }}</p>
+                                        </div>
+                                    </a>
+                                    <div class="pro_no2_label">
+                                        <div class="pro_no2_ln">
+                                            {%for label in labels%}
+                                                {% if label.project.Id == proTwo.Id %}
+                                                <p>{{label.projectLabel.ProjectLabelName}}</p>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                    {% for user in users %}
+                                        {% if user.project.Id == proTwo.Id %}
+                                        <div class="pro_no2_user"><p>by&nbsp;<a href="#">{{ user.user.UserName }}</a></p></div>
+                                        {% endif %}
+                                    {% endfor %}
+                                    </div>
+                                </div>
+                            {% else %}
+                                <a href="dedetails?projectId={{ proTwo.Id }}">
+                                    <div class="pro_right_img">
+                                        <img src="/static/photos/{{ proTwo.Img}}">
+                                    </div>
+                                </a>
+                                <div class="pro_no2">
+                                    <a href="dedetails?projectId={{ proTwo.Id }}">
+                                        <div class="pro_no2_name">
+                                            <p>{{ proTwo.ProjectName }}</p>
+                                        </div>
+                                    </a>
+                                    <div class="pro_no2_label">
+                                        <div class="pro_no2_ln">
+                                            {%for label in labels%}
+                                                {% if label.project.Id == proTwo.Id %}
+                                                <p>{{label.projectLabel.ProjectLabelName}}</p>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                    {% for user in users %}
+                                        {% if user.project.Id == proTwo.Id %}
+                                        <div class="pro_no2_user"><p>by&nbsp;<a href="#">{{ user.user.UserName }}</a></p></div>
+                                        {% endif %}
+                                    {% endfor %}
+                                    </div>
+                                </div>
+                            {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% for project in proArray %}
+                        <div class="pro_no3">
+                            <p>
+                            {% if project.Statue == 1 or project.Statue == 3 %}
+                                <a href="redetails?projectId={{ project.Id }}">{{ project.ProjectName }}</a>
+                            {% else %}
+                                <a href="dedetails?projectId={{ project.Id }}">{{ project.ProjectName }}</a>
+                            {% endif %}
+                            </p>
+                            <div class="pro_no3_label">
+                                {%for label in labels%}
+                                    {% if label.project.Id == project.Id %}
+                                    <p>|{{label.projectLabel.ProjectLabelName}}</p>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        <!--项目排名结束-->
+        <!--创意排名开始-->
+            <div class="best_find_2">
+                <div class="line_one"></div>
+                <div class="box-one-left">
+					<h2>WEEKLY<small>creation list</small></h2>
+				</div>
+                <div class="creationContent box" >
+                    {% for creation in creationArray  %}
+                    <div class="oneCreaBest">
+                        <a href="crdetails?creationId={{ creation.Id }}">
+                            <img src="/static/photos/{{ creation.Img}}" class="creaImg">
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        <!--创意排名结束-->
+			<a id="gotop" href="#"></a>
+		</div>
+	</div>
+</div>
+    <!--主要内容结束-->
+    <script src="{% static 'base/js/jquery-3.2.1.min.js'%}"></script>
+    <script type="text/javascript" src="{% static 'idea/js/index.js'%}"></script>
+    <script type="text/javascript" src="{% static 'base/js/bootstrap.min.js' %}"></script>
+    <script>$('.carousel').carousel({interval: 4000})</script>
+    <script>
+
+    </script>
+{% endblock %}
+
+

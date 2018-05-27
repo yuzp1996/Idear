@@ -1,0 +1,276 @@
+{% extends 'idea/Base.html' %}
+{% block title %}<title>创意详情</title>{% endblock %}
+{% block CSS %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'creation/css/bootstrap.css' %}" />
+    <link rel="stylesheet" href="{% static 'base/css/base.css' %}">
+    <link rel="stylesheet" href="{% static '/creation/css/crdetails.css' %}">
+
+{% endblock %}
+{% load commentshow %}
+{% block content %}
+    {% load static %}
+    <div class="container-fluid">
+        <div class="main">
+            <div class="main-left">
+                <div class="home-b-all">
+                    <div class="home-b-tags">
+                        {%for label in labels%}
+                        <a class="tags" href="creations?sign={{label.projectLabel.Id}}">
+                            <span>{{label.projectLabel.ProjectLabelName}}</span>
+                        </a>                        
+                        {%endfor%}
+                    </div>
+                    <input autocomplete="off" type="text" style="display: none" id = "creationId" value="{{creation.Id}}">
+                    <div class="home-b-title">
+                        <h1>{{creation.Name}}</h1>
+                        <p>{{creation.LastChange}}&nbsp;&nbsp;|&nbsp;&nbsp;<a href="www.github.com">www.github.com</a></p>
+                        <hr>
+                    </div>
+                    <div class="text">
+                        <p>{{creation.Describe | safe}}</p>
+                    </div>
+                    <div class="home-b-foot">
+                        <div class="home-b-report" id="rdreport">
+                            <img src="{% static '/creation/imgs/report.png' %}" style="width:16px;
+    height:16px;">
+                            <a type="button" class="btn btn-style" data-toggle="modal" data-target="#exampleModal" data-whatever="@mdo">举报</a>
+                            <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+                              <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                  <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                    <h4>请填入举报理由</h4>
+                                  </div>
+                                  <div class="modal-body">
+                                    <form>
+                                      <div class="form-group">
+                                        <label for="message-text" class="control-label">举报理由:</label>
+                                        <textarea class="form-control" id="message-text"></textarea>
+                                      </div>
+                                    </form>
+                                  </div>
+                                  <div class="modal-footer">
+                                    <!--<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>-->
+                                    <button type="button" class="btn btn-primary" id="submit-report">提交</button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                        </div>
+                        <div class="home-b-share">
+                            <a href="#" class="share-buttons"></a>
+                            <a href="#" class="share-buttons"></a>
+                            <a href="#" class="share-buttons"></a>
+                            <a><img src="{% static '/creation/imgs/share.png' %}" style="width:16px;
+    height:16px;">分享</a>
+                        </div>
+                        <div class="home-b-comment">
+                            <img src="{% static '/creation/imgs/reply.svg' %}" style="width:16px;
+    height:16px;">
+                            <a href="#comment">评论</a>
+                        </div>
+                        <div class="home-b-collection" creation={{ creation.Id }}>
+                            <img src="{% static '/creation/imgs/collection0.png' %}" style="width:16px;
+    height:16px;">
+                            <a href="#">关注</a>
+
+                        </div>
+                    </div>
+
+                    <div class="praise" creation={{ creation.Id }}>
+                        <img src="{% static '/creation/imgs/like1.png' %}" id="praise-img" >
+                        {% for praise in praises %}
+                            {% if praise.user_id == userId and praise.creation_id == creation.Id %}
+                                <img src="{% static 'creation/imgs/likes.png' %}" id="praise-img">
+                            {% endif %}
+                        {% endfor %}
+                        <span class="praise-txt">{{creation.Praise_Creation_set.count}}</span><p>人觉得很赞</p>
+
+                    </div>
+                </div>
+                <div class="home-b-user">
+                    <div class="user-img">
+                        <img src="/static/photos/{{ creation.user.Img }}">
+                    </div>
+                    <div class="user-name">
+                        <p>{{creation.user.UserName}}</p>
+                        <div class="user-intro">
+                            <div class="user-score">
+                                <img class="pimg" src="{% static 'project/imgs/score.svg'%}">
+                                <span>1000</span>
+                            </div>
+                            <div class="user-id">
+                                <img class="pimg" src="{% static 'project/imgs/id.svg'%}">
+                                <span>身份</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="user-follow">+</div>
+                </div>
+            </div>
+                <div class="line">
+                <hr>
+                </div>
+                <div class="word">
+                    <img src="{% static 'creation/imgs/light1.png' %}"
+                         style="width:30px;height:30px;margin:5px 0px 2px -5px">
+                    <p>你可能会对这些感兴趣</p>
+                </div>
+            <div class="main-right">
+
+
+{%for creation2crojectLabel in creation2crojectLabels%}
+                 <div class="similar-block">
+                    <div class="block-main">
+                        <div class="block-img">
+                            <img src="../../static/photos/{{ creation2crojectLabel.creation.Img }} " style="width:100%;height:180px;">
+                        </div>
+                        <a class="block-title" href="crdetails?creationId={{creation2crojectLabel.creation.Id}}">
+                            <h5>{{creation2crojectLabel.creation.Name}}</h5>
+                        <!--<a class="block-text">{{creation2crojectLabel.creation.Describe}}</a>-->
+                        </a>
+                    </div>
+                    <div class="block-bottom">
+                        <div class="block-bottom-ava">
+                            <img src="/static/photos/{{ creation2crojectLabel.creation.user.Img }}" style="width:40px;height:40px">
+                        </div>
+                        <div class="block-bottom-name">
+                            <a>{{creation2crojectLabel.creation.user.UserName}}</a>
+                        </div>
+                        <div class="block-bottom-hot">
+                            <div class="block-hotfollow" creation={{ creation2crojectLabel.creation.Id }}>
+                                        <img src="{% static 'creation/imgs/collection1.png' %}"
+                                             style="width:15px;height:15px;margin-left: 2px ">
+                            <span class="followspan">{{ creation2crojectLabel.creation.Follow_Creation_set.count }}</span>
+                            </div>
+                            <div class="block-hotlike" creation={{ creation2crojectLabel.creation.Id }}>
+                                        <img src="{% static 'creation/imgs/like1.png' %}"
+                                             style="width:14px;height:14px;margin-left: -23px ">
+                            <span class="likespan">{{ creation2crojectLabel.creation.Praise_Creation_set.count }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+{%endfor%}
+
+
+            </div>
+
+            <div class="content-footer">
+
+
+                <div id="comment">
+                    <div class="comment1-1">评论专区</div>
+                    <div class="comment1-2"></div>
+                    <div class="ctop">
+                        <img class="u-img" id="u-img" src="/static/photos/{{ user.Img }}">
+                        <div class="carea">
+                            <div class="tocomment">
+                                <textarea placeholder="输入评论内容" autocomplete="off" name="" id="comment-content1" class="comment-text"></textarea>
+                            </div>
+                            <button class="putcomment" id="putcomment">评论</button>
+                        </div>
+                    </div>
+<!-- 
+                     [  [head,hui,hui]  ,  [head,hui,hui], [head]   ] -->
+
+                    {% for commentlist in comments%}
+                    <div class="c-all" name="c-all">
+                          <div class="cmain" name="cmain">
+                              <img class="c-img" id="c-img" src="/static/photos/{{ commentlist | firstcommentimg }}">
+                              <div class="comment-box">
+                                  <div class="comment-head">
+                                      <h6 class="comment-name " id="comment-name"><a href=" " >{{commentlist|firstcomment}}</a></h6>
+                                      <span class="cdate">{{commentlist|firstcommenttime|date:"Y/m/d"}}</span>
+                                      <span class="ctime">{{commentlist|firstcommenttime|date:"H:i:s"}}</span>
+                                      <div class="c-option">
+                                          <!--<img class="clike" id="rdclike" src="{% static 'project/imgs/like1.svg'%}"><span class="clikenum">1111</span>-->
+                                          <img class="creply" id="rdcreply" src="{% static 'creation/imgs/reply.svg'%}">
+
+                                          <a type="button" class="btn btn-style" data-toggle="modal" data-target="#exampleModal2" data-whatever="@mdo">
+                                              <img class="creport" id="rdcreport" src="{% static 'creation/imgs/report.png'%}">
+                                          </a>
+                                            <div class="modal fade" id="exampleModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+                                              <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                  <div class="modal-header">
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                                    <h4>请填入举报理由</h4>
+                                                  </div>
+                                                  <div class="modal-body">
+                                                    <form>
+                                                      <div class="form-group">
+                                                        <label for="message-text" class="control-label">举报理由:</label>
+                                                        <textarea class="form-control" id="message-text2"></textarea>
+                                                      </div>
+                                                    </form>
+                                                  </div>
+                                                  <div class="modal-footer">
+                                                    <!--<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>-->
+                                                    <button type="button" class="btn btn-primary" id="submit-rdcreport" commentId={{commentlist|firstcomment|firstcommentId}}>提交</button>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            </div>
+                                      </div>
+                                  </div>
+                                  <div class="comment-content">
+                                     <p>{{commentlist|firstcommentcontent}}</p>
+                                  </div>
+                                  <div class="commentreply commentreplys" id="commentreplys">
+                                      <textarea placeholder="回复" name="" autocomplete="off" id="comment-content2" class="commentreply-text"></textarea>
+                                      <button class="putcomment putcomments" id="putcomments" backcommentId = {{commentlist|firstcomment|firstcommentUuid}} >回复</button>
+                                  </div>
+                              </div>
+                          </div>
+                          {%for comment in commentlist|leftcomment%}
+                          <div class="c-reply">
+                              <img class="rc-img" id="user-img" src="/static/photos/{{comment.user.Img}}">
+
+                              <div class="rcomment-box">
+                                  <div class="rcomment-head">
+                                      <h6 class="rcomment-name " id="rcomment-name"><a href=" ">{{comment.user.UserName}}</a>  回复</h6>
+                                      <span class="rcdate">{{comment.Date|date:"Y/m/d"}}</span>
+                                      <span class="rctime">{{comment.Date|date:"H:i:s"}}</span>
+                                      <div class="r-option">
+                                          <!--<img class="rclike" id="rdrclike"  src="{% static 'project/imgs/like1.svg'%}"><span class="rclikenum">1111</span>-->
+                                          <img class="rcreply"   id="rdrcreply" src="{% static 'project/imgs/reply.svg'%}">
+                                          <img class="rcreport" id="rdrcreport" src="{% static 'creation/imgs/report.png'%}">
+                                      </div>
+                                  </div>
+                                  <div class="rcomment-content">
+                                      <p id="rdr-content">{{comment.Content}}</p>
+                            </div>
+                            <div class="commentreply commentreplys" id="rcommentreplys">
+                                      <textarea placeholder="回复" name="" autocomplete="off" id="rcomment-content2" class="commentreply-text"></textarea>
+                                      <button class="putcomment" id="rputcomments" >回复</button>
+                                  </div>
+                              </div>
+                          </div>
+                              {%endfor%}
+
+
+                    </div>
+                    {% endfor %}
+
+                    
+                </div>
+
+
+
+            </div>
+
+
+        </div>
+    </div>
+
+
+{% endblock %}
+{% block script %}
+
+    <script type="text/javascript" src="{% static 'creation/js/jquery-1.9.1.js'%}"></script>
+    <script type="text/javascript" src="{% static 'base/js/bootstrap.js' %}"></script>
+    <script type="text/javascript" src="{% static 'creation/js/crdetails.js' %}"></script>
+
+{% endblock %}

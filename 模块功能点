@@ -1,0 +1,215 @@
+
+功能点提示：
+   用户评论：用户的所有评论 可以据此查看该用户的历史评论，如果有不良倾向 可以对其进行通知或其他处理
+   用户消息：用户被举报或者需要被通知 则通过这里进行通知管理(所有  个人  团体)
+
+
+
+
+
+
+基本功能点：
+   用户管理：用户数据保存  添加用户修改用户  去除分享图标
+
+   界面优化(去除无用消息 改变右上角admin)  down
+
+   项目管理：全部项目的筛选 新增项目  新增招募  招募管理(全部后台)
+
+   创意管理：筛选的bug   保存与修改   新增创意（全部后台）
+
+   评论管理： 所有的后台实现
+
+   关系管理：所有后台实现
+
+   消息管理：前后端实现
+
+   标签管理： debug
+
+   举报管理： 后台实现
+
+
+
+附加功能点：
+   总览与评论总览
+   侧边栏打开状态
+
+
+
+代码交互实例
+
+页面跳转：
+window.location.href = "http://127.0.0.1:8000/admina/user/all/2";
+
+
+前端：
+function linkAge(){
+    var str = "<option value='请选择' selected='selected' >请选择</option>"
+    if ($("#commChapter").val()==="0")
+        classList();
+    else
+    $.post("/Seal/getCommodityOne",{"commChapter":$("#commChapter").val()},function(data){
+        var jsonData = $.parseJSON(data);
+        for(var i in jsonData){
+            str+="<option value='"+jsonData[i].id+"'>"+jsonData[i].name+"</option>";
+        }
+        $("#commClass").empty().append(str);
+    })
+}
+
+后端：
+@csrf_exempt
+def getCommodityOne(req):
+    """
+    获取商品类别
+
+    :param req:
+    :return:
+    """
+    SC = SealClass.objects.filter(parentClassId=req.POST['commChapter'])
+    if SC.exists():
+        List = []
+        for obj in SC:
+            word = {}
+            word['father'] = obj.parentClassId.parentName
+            word["id"] = obj.sealClassId
+            word["name"]=obj.className
+            word["is"]=obj.isShow
+            List.append(word)
+        return HttpResponse(json.dumps(List))
+    else:
+        return HttpResponse(0)
+ 
+
+
+前端：
+        var data = new FormData();
+        data.append('user_name', user_name)
+        data.append('user_account', user_account)
+        data.append('user_identity', user_identity)
+        data.append('user_passwd', user_passwd)
+        data.append('user_email', user_email)
+        data.append('user_sex', user_sex)
+        data.append('user_school', user_school)
+        data.append('user_institutde', user_institutde)
+        data.append('user_major', user_major)
+
+        if(Img_input.files[0]){
+            data.append('Img', Img_input.files[0]);
+        }
+        data.append('Tags', tags);
+        data.append('user_introduction', user_introduction)
+        //提交数据
+        $.ajax({
+            url: '{% url 'admina:user_add' %}',
+            type: 'POST',
+            data: data,
+            cache: false,
+            processData: false,
+            contentType: false,
+            success:function(data){
+                data = JSON.parse(data)
+                if(data.status === 1){
+                    alert(data.message)
+                    window.location.href = "http://127.0.0.1:8000/admina/user/all/2";
+                }else {
+                    alert(data.message)
+                }
+
+            },
+            error:function () {
+                alert("服务器异常")
+            }
+        });
+
+
+
+后端：
+@csrf_exempt
+@check_login()
+@require_http_methods(["GET", "POST"])
+def user_add(req):
+    if req.method == "GET":
+        userLabels = models.UserLabel.objects.filter(IsUse=True)
+        return render(req, 'admina/user_add.html', {
+            'UserLabels': userLabels
+        })
+    else:
+        resData = {
+            "status": 0,
+            "message": ""
+        }
+        # 获取传入数据
+        postData = req.POST
+        user_name = postData.get('user_name')
+        user_account = postData.get('user_account')
+        user_identity = postData.get('user_identity')
+        user_passwd = postData.get('user_passwd')
+        user_email = postData.get('user_email')
+        user_sex = postData.get('user_sex')
+        user_school = postData.get('user_school')
+        user_institutde = postData.get('user_institutde')
+        user_major = postData.get('user_major')
+        user_tags = postData.get('Tags').split(',')
+        user_introduction  = postData.get('user_introduction')
+
+        if req.FILES:
+            user_img = req.FILES.get('Img')
+        else:
+            user_img = None
+
+        try:
+            user = models.User.objects.create(
+                UserName=user_name,
+                Account=user_account,
+                PassWord=user_passwd,
+                Identity=user_identity,
+                Sex=user_sex,
+                Email=user_email,
+                Img=user_img,
+                Introduction=user_introduction,
+                School=user_school,
+                Institude=user_institutde,
+                Major=user_major
+            )
+            user.save()
+            for label in user_tags:
+                user_label = models.UserLabel.objects.get(Id=label)
+                user2userlabel = models.User2UserLabel.objects.create(
+                    user=user,
+                    userLabel=user_label,
+                    Uuid=uuid.uuid4()
+                )
+                user2userlabel.save()
+            resData['status'] = 1
+            resData['message'] = 'success'
+        except Exception as e:
+            resData['message'] = str(e)
+        return HttpResponse(JsonResponse(resData))
+        
+
+
+删除记录：
+
+    if req.method == "POST":
+        result = {
+            "status": 0,
+            "message": ''
+        }
+        try:
+            models.Comment.objects.filter(Id=req.POST['commentid']).delete()
+        except:
+            result["message"] = "服务器异常"
+            return HttpResponse(json.dumps(result))
+        else:
+            result["status"] = 1
+            result["message"]="删除成功"
+            return HttpResponse(json.dumps(result))
+
+
+用户前台
+
+消息类型是0就是申请的消息
+消息类型是1就是点赞关注之类的消息
+
+消息删除
+已读消息展示

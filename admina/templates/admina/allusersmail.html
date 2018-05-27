@@ -1,0 +1,172 @@
+{% extends '../base/base.html' %}
+
+{% block title %}Admin-Index{% endblock %} {# title #}
+{% block css %}
+    {% load static %}
+    <!--file upload-->
+    <link rel="stylesheet" type="text/css" href="{% static '/css/bootstrap-fileupload.min.css'%}" />
+    <link rel="stylesheet" type="text/css" href="{% static '/js/bootstrap-datepicker/css/datepicker-custom.css'%}" />
+    <!--multi-select-->
+    <link rel="stylesheet" type="text/css" href="{% static '/js/jquery-multi-select/css/multi-select.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static '/js/bootstrap-wysihtml5/bootstrap-wysihtml5.css' %}" />
+
+    {# icheck css #}
+    <link href="/static/js/iCheck/skins/flat/grey.css" rel="stylesheet">
+    <link href="/static/js/iCheck/skins/flat/red.css" rel="stylesheet">
+    <link href="/static/js/iCheck/skins/flat/green.css" rel="stylesheet">
+    <link href="/static/js/iCheck/skins/flat/blue.css" rel="stylesheet">
+    <link href="/static/js/iCheck/skins/flat/yellow.css" rel="stylesheet">
+    <link href="/static/js/iCheck/skins/flat/purple.css" rel="stylesheet">
+    {# css #}
+
+{% endblock %}
+
+{% block heading %}   {# heading #}
+<ul class="breadcrumb">
+    <h3>消息管理</h3>
+    <li class="active">发送消息</li>
+</ul>
+{% endblock %}
+
+{% block body %}
+<div class="row">
+    <div class="col-lg-12">
+        <section class="panel">
+            <header class="panel-heading">
+                邮件头部
+            </header>
+            <div class="panel-body">
+                <div class="form">
+                    <form class="cmxform form-horizontal adminex-form" id="signupForm" >
+                        <div class="form-group ">
+                            <label for="firstname" class="control-label col-lg-2">邮件名称</label>
+                            <div class="col-lg-5">
+                                <input autocomplete="off" class=" form-control" id="mail_name" name="project_name" type="text" required value="{{ project.ProjectName }}"/>
+                            </div>
+                        </div>
+
+
+                        <div class="form-group ">
+                            <label for="email" class="control-label col-lg-2">收件人</label>
+                            <div class="col-lg-5">
+                                <select class="form-control input-md" id="userid" required>
+                                    <option value="63">所有人</option>
+                                {%  for user in users %}
+                                    <option id="user-{{ user.Id }}" value="{{ user.Id }}">{{ user.UserName }}</option>
+                                {% endfor %}
+                            </select>
+                            </div>
+                        </div>
+
+
+                    </form>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <section class="panel">
+            <header class="panel-heading">
+                邮件内容
+            </header>
+            <div class="panel-body">
+                <div class="form-group">
+                    <form class="cmxform form-horizontal adminex-form" >
+                        <div class="form-group" style="height: 270px">
+                            <div class="col-md-12">
+                                    <textarea class="wysihtml5 form-control" id="wysihtml5_1" rows="9"></textarea>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+
+
+<div class="form-group">
+    <div class="form-group last">
+        <div class="col-lg-10 col-lg-offset-2">
+            <button class="btn btn-primary" type="submit" id="send">发送</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <button class="btn btn-default" type="button" id="cancle">重置</button>
+        </div>
+    </div>
+</div>
+
+{# body #}
+
+{% endblock %}
+
+
+{% block midscript %}   {# midescript #}
+    <script ype="text/javascript" src="{% static '/js/bootstrap-datepicker/js/bootstrap-datepicker.js'%}"></script>
+    <script ype="text/javascript" src="{% static '/js/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js'%}"></script>
+    <script ype="text/javascript" src="{% static '/js/bootstrap-daterangepicker/moment.min.js'%}"></script>
+    <script src="{% static '/js/pickers-init.js' %}"></script>
+    {# icheck #}
+    <script src="/static/js/iCheck/jquery.icheck.js"></script>
+    <script src="/static/js/icheck-init.js"></script>
+    {#  fileupload   #}
+    <script type="text/javascript" src="/static/js/bootstrap-fileupload.min.js"></script>
+    {#  RichTextEditor #}
+    <script type="text/javascript" src="/static/js/bootstrap-wysihtml5/wysihtml5-0.3.0.js"></script>
+    <script type="text/javascript" src="/static/js/bootstrap-wysihtml5/bootstrap-wysihtml5.js"></script>
+
+{% endblock %}
+
+{% block lastscript %}  {# lastscript #}
+<script>
+    jQuery(document).ready(function(){
+            $('#wysihtml5_1').wysihtml5(
+             {
+                 height:"500px;"
+             }
+            );
+
+            // 检查正确性并提交代码
+            $("#send").click(function () {
+                // 检查输入值的正确性
+                alert("send")
+                var userid = $("#userid option:selected").val()
+                var context = $('#wysihtml5_1').val()
+                var mailName = $('#mail_name').val()
+
+                var data = new FormData();
+                data.append('userid', userid)
+                data.append('context', context)
+                data.append('mailName', mailName)
+
+
+
+                // 提交数据
+                $.ajax({
+                url: '{% url 'admina:allUserMail' %}',
+                type: 'POST',
+                data: data,
+                cache: false,
+                processData: false,
+                contentType: false,
+                success:function(data){
+                    data = JSON.parse(data)
+                    if(data.status === 1){
+                        alert(data.message)
+                    }else {
+                        alert(data.message)
+                    }
+                },
+                error:function () {
+                    alert("发送消息失败")
+                }
+            });
+            })
+            $('#cancle').click(function(){
+                    window.location.reload()
+
+            })
+    });
+</script>
+{% endblock %}

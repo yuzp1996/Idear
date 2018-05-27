@@ -1,0 +1,215 @@
+{% extends '../base/base.html' %}
+
+{% block title %}Admin-Creation{% endblock %} {# title #}
+
+{% block heading %}
+
+{# heading #}
+<ul class="breadcrumb">
+    <h3>创意管理</h3>
+    <li class="active">全部创意</li>
+</ul>
+{% endblock %}
+
+{% block body %} {# body #}
+    {% load static %}
+<div class="wrapper">
+    <div class="row">
+        <div class="col-sm-12">
+            <section class="panel">
+                <header class="panel-heading">
+                    全部创意
+                    <span class="tools pull-right">
+                                <a href="javascript:;" class="fa fa-chevron-down"></a>
+                                <a href="javascript:;" class="fa fa-times"></a>
+                             </span>
+                </header>
+                <div class="panel-body">
+
+                    <ul id="filters" class="media-filter">
+                        <div class="row">
+
+                            <li><a href="#" data-filter="*" > All</a></li>
+                            {% for label in Labels %}
+                                <li>
+                                    <a href="{{ label.Id }}" data-filter="*" >{{ label.ProjectLabelName | slice:"5" }}</a>
+                                </li>
+                            {% endfor %}
+                        </div>
+                    </ul>
+
+                    <div class="btn-group pull-right">
+                        <button type="button" class="btn btn-primary btn-sm" id="add_new_btn"><i class="fa fa-folder-open"></i>新建创意</button>
+                    </div>
+
+                    <div id="gallery" class="media-gal">
+                        {% for creation in Creations %}
+                            <div class="images item " name="creatino_div" id="creation-{{ creation.Id }}">
+                            <a href="#myModal" data-toggle="modal" >
+                                {% if creation.Img %}
+                                     <img src="/static{{ creation.Img.url }}" alt=""  name="creations"/>
+                                {% else %}
+                                     <img src="{% static 'images/gallery/image1.jpg'%}" alt="" name="creations"/>
+                                {% endif %}
+
+                            </a>
+                            <p>{{ creation.Name | slice:"10" }}</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="col-md-12 text-center clearfix">
+                        <ul class="pagination">
+                            <li><a href="#">«</a></li>
+                            {% for page in pages %}
+                                <li><a href="/admina/creation/all/{{ page }}">{{ page }}</a></li>
+                            {% endfor %}
+                            <li><a href="#">»</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Modal -->
+                    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                    <h4 class="modal-title">创意详情编辑</h4>
+                                </div>
+
+                                <div class="modal-body row">
+
+                                    <div class="col-md-5 img-modal">
+                                        <img id="creation_detail_img_path" src="{% static 'images/gallery/image1.jpg'%}" alt="">
+                                        <p><trong>提出者:</trong> <a href="#" id="creation_detail_user">ThemeBucket</a></p>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <div class="form-group">
+                                            <label> 创意名称</label>
+                                            <input id="name" value="img01.jpg" class="form-control">
+                                        </div>
+                                        <div class="form-group">
+                                            <label> 创意描述</label>
+                                            <textarea rows="2" class="form-control" id="creation_detail_value"></textarea>
+                                        </div>
+                                        </div>
+                                        <div class="pull-right">
+                                            <button class="btn btn-danger btn-sm" type="button" id="creation_delete_btn">删除</button>
+                                            <button class="btn btn-success btn-sm" type="button" id="creation_modify_btn">保存更改</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- modal -->
+                </section>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+{% block midscript %}
+    <script type="text/javascript">
+    $(function() {
+        var $container = $('#gallery');
+        $container.isotope({
+            itemSelector: '.item',
+            animationOptions: {
+                duration: 750,
+                easing: 'linear',
+                queue: false
+            }
+        });
+
+        // filter items when filter link is clicked
+        $('#filters a').click(function() {
+            var selector = $(this).attr('data-filter');
+            $container.isotope({filter: selector});
+            return false;
+        });
+    });
+    </script>
+
+    <script type="text/javascript">
+        $("div[name='creatino_div']").click(function () {
+           var creationid = this.id.split('-')[1];
+            $.post(window.location.pathname,{"creationId":creationid},function (res) {
+                res = JSON.parse(res);
+                if(res.status === 1){
+                    document.getElementById("creation_detail_img_path").src = "/static" + res.creationImg;
+                    document.getElementById("creation_detail_user").textContent = res.creationUserName;
+                    document.getElementById("creation_detail_user").setAttribute("href",  '/admina/user/detail/' + res.creationUserId.valueOf());
+                    document.getElementById("creation_detail_value").value = res.creationContent;
+                    $("input[id='name']").get(0).value = res.creationName;
+                    var delete_btn= document.getElementById("creation_delete_btn");
+                    delete_btn.onclick = function () {
+                        if(confirm("确认删除？")){
+                            $.post("/admina/creation/delete/",{"creationId":creationid},function(data){
+                                data=JSON.parse(data);
+                                if(data.status === 1){
+                                    alert(data.message);
+                                    window.location.reload();
+                                }else if(data.status === 0){
+                                    alert(data.message);
+                                    window.location.reload();
+                                }
+                            });
+                        }
+                        };
+                }else if (res.status === 0){
+                    alert(res.message);
+{#                    window.location.reload();#}
+                }else {
+                    alert("获取数据异常！")
+                }
+
+
+            var modify_btn = document.getElementById("creation_modify_btn");
+            modify_btn.onclick = function () {
+            if(confirm("确认更改？")){
+                  $.post("/admina/creation/modify/", {"creationId": creationid, "creationName": $("input[id='name']").get(0).value, 'creationDesc':document.getElementById("creation_detail_value").value },function (res) {
+                            res = JSON.parse(res);
+                            if(res.status === 1){
+                                alert(res.message);
+                            window.location.reload();
+                            }else if(res.status === 0){
+                                alert(res.message);
+                                window.location.reload();
+                            }
+                    });
+            }
+        }
+
+            })
+        });
+        //创意修改
+        <!--var modify_btn = document.getElementById("creation_modify_btn");-->
+        <!--modify_btn.onclick = function () {-->
+            <!--if(confirm("确认更改？")){-->
+                  <!--$.post("/admina/creation/modify/", {"creationId": creationid, "creationName": $("input[id='name']").get(0).value, 'creationDesc':document.getElementById("creation_detail_value").value },function (res) {-->
+                            <!--res = JSON.parse(res);-->
+                            <!--if(res.status === 1){-->
+                                <!--alert(res.message);-->
+                            <!--window.location.reload();-->
+                            <!--}else if(res.status === 0){-->
+                                <!--alert(res.message);-->
+                                <!--window.location.reload();-->
+                            <!--}-->
+                    <!--});-->
+            <!--}-->
+        <!--}-->
+        // 新建创意按钮
+    var add_new_btn = document.getElementById('add_new_btn')
+    add_new_btn.onclick = function () {
+            window.location.href = '{% url 'admina:creation_add' %}'
+    }
+    </script>
+
+    {# midescript #}
+{% endblock %}
+
+{% block lastscript %}  {# lastscript #}
+
+{% endblock %}
