@@ -4,5 +4,5 @@
 
 
 $("#backhomepage").click(function (){
-    window.location.href = "homepage";
+    window.location.href = "PM";
 });

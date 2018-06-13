@@ -1118,7 +1118,6 @@ def rcomment(req):
                 'status': 1,
                 'message': 'success',
             }
-
             return HttpResponse(json.dumps(result))
 
 
@@ -1463,7 +1462,6 @@ def recruit_apply(req):
     status = 0
     if req.method == 'POST':
         try:
-
             useremail = req.session.get('user_email')
             projectId = req.POST["projectId"]
             content = req.POST["describe"]
@@ -1476,7 +1474,6 @@ def recruit_apply(req):
             user = models.ProjectUser.objects.get(project = projectId,Identity=1)
             projectName = models.Project.objects.get(Id=projectId).ProjectName
             content = projectName+"招募申请: "+content+'$'+str(ApplyID)
-            print content
             models.Message.objects.create(user=user.user, Content=content, Priority=0)
             status = 1
             return HttpResponse(status)
@@ -1529,8 +1526,6 @@ def projects(req):
                 for obj in ProjectLabelObjs:
                     projects.append(obj.project)
                 recruit = [1, 3]
-
-
             return render_to_response('project/projects.html', {'projectLabels':models.ProjectLabel.objects.all() , "projects":projects, "recruit":recruit })
         else:
             id = req.POST['projectId']
@@ -2076,8 +2071,11 @@ def creationfollow(req):
     '''
     if req.method == 'GET':
         email = req.COOKIES.get('user_email')
+        print email
         user = models.User.objects.get(Email=email)
         follows = models.Follow.objects.filter(Q(user=user))
+        for i in follows:
+            print i.Id
         return render_to_response('personal/creationfollow.html', {"follows": follows})
     if req.method == 'POST':
         creationId = req.POST["creationId"]

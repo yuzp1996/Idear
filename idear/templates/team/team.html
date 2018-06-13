@@ -45,11 +45,6 @@
                             </button>
                             <div class="praise" >
                                 <span class="praise_0" team="{{ team.Id }}"><img src="../../static/team/imgs/zan.png" name="praise_img" /> </span>
-                                 {% for praise in praises %}
-                                    {% if praise.user_id == userId and praise.user_prised_id == user.Id %}
-                                        <img src="../../static/team/imgs/yizan.png" name="praise_img" />
-                                    {% endif %}
-                                {% endfor %}
                                 <span class="praise-txt">{{ team.Praised_User_set.count }}</span>
                                 <span class="add-num"><em>+1</em></span>
                             </div>
