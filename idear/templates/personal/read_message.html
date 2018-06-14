@@ -29,14 +29,23 @@
             <tbody>
                 <tr>
                     <td style=" width: 5%;"><span class="repo-language-color"></span></td>
-                    <td style=" width: 45%;overflow: hidden;">{{ message.Content|mailname }}</td>
+                    <td style=" width: 45%;overflow: hidden;">{{ message.Content|mailname }} </td>
                     <td style=" width: 17%;">{{ message.Date }}</td>
                     <td style=" width: 10%;">
+
+                        {% ifequal message.Priority 3 %}
+                        帮助申请
+                        {% endifequal %}
                         {% ifequal message.Priority 1 %}
                         点赞or关注
-                        {% else %}
+                        {% endifequal %}
+
+                        {% ifequal message.Priority 0 %}
                         招募申请
                         {% endifequal %}
+                        
+
+                       
 
                 </td>
                     <td style=" width: 15%;">
@@ -83,6 +92,7 @@
             content = jsonData.Content.split('$')
 
             if(jsonData.Priority == "0"){
+                var newtype = "消息内容: "
 
                 var type = "项目招募" 
                 var isagree = ""
@@ -97,20 +107,20 @@
                     var agree ="<div align='right'><h1>"+isagree+"</h1></div>"
                 }
 
-            }else{
+            }else if (jsonData.Priority == "1"){
                 var type= "关注点赞"
+                newtype = "项目or创意: "
+            }else {
+                var type = "帮助申请"
             }
             var str = "";
             str += "<div class='modal-body'>";
             str += "时间：" + jsonData.Date + "<br><br>";
             str += "消息类型：" + type +"<br><br>";
-            str += "消息内容：" + content[0] + "<br><br>";
+            str += newtype + content[0] + "<br><br>";
             str += agree
             $(".modal-body").empty().append(str);
         });
-
-
-        
     })
 
 

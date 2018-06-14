@@ -652,8 +652,9 @@ def teamhelpapplication(req, teamhelpid=None):
         try:
             email = req.POST['user_email']
             describe = req.POST['sHTML']
+            team = req.POST['team']
             users = models.User.objects.filter(Email=email)[0]
-
+            team = models.User.objects.filter(Id=team)[0]
         except:
             result['status'] = 0
             result['message'] = '获取信息失败'
@@ -661,6 +662,7 @@ def teamhelpapplication(req, teamhelpid=None):
         else:
             teamhelp = models.User.objects.get(Id=teamhelpid)
             models.HelpApplication.objects.create(Email=email, AppliedTeam=teamhelp, Applier=users, Describe=describe)
+            models.Message.objects.create(user=team,Content=describe,IsRead=0,Priority=3)
             result['status'] = 1
             result['message'] = '成功'
             return HttpResponse(json.dumps(result))
@@ -1020,10 +1022,14 @@ def star(req):
         starType = int(req.POST["starType"])
         if starType == 1:    #如果是创意
             try:
+
                 p = models.Praise.objects.get(creation_id=Id, user_id=userId).delete()    #尝试取消点赞
                 status = 2
             except:
                 p = models.Praise.objects.create(creation_id=Id, user_id=userId)
+                User = models.Creation.objects.get(Id = Id).user
+                Creation = models.Creation.objects.get(Id = Id).Name
+                models.Message.objects.create(user = User, Content = Creation, Priority =1)
                 status = 1
             return HttpResponse(status)
         elif starType ==2:
@@ -1032,6 +1038,10 @@ def star(req):
                 status = 2
             except:
                 p = models.Praise.objects.create(project_id=Id, user_id=userId)
+                User = models.Project.objects.get(Id = Id).user
+                Project = models.Project.objects.get(Id = Id).Name
+                print '321'+Project
+                models.Message.objects.create(user = User, Content = Project, Priority =1)
                 status = 1
 
             return HttpResponse(status)
@@ -2308,6 +2318,7 @@ def PM_content(req,projectid):
         if recruit.exists():
             recruit = recruit[0]
         try:
+            print project
             return render_to_response('personal/PM_content.html',{"project": project, "labels": labels,"firstUser":firstUser[0], "user": user, "recruit": recruit,})
         except:
             return render_to_response('personal/PM_content.html')
@@ -2337,10 +2348,12 @@ def PM_content(req,projectid):
             postCon = req.POST['postCon']
             plan = req.POST['plan']
             img = req.FILES.get("coverMap")
+            print EndTime
 
-            EndTime = datetime.strptime(EndTime,"%Y/%m/%d")
-
-        except:
+            # EndTime = datetime.strptime(EndTime,"%Y/%m/%d")
+            EndTime = '2018-06-16'
+        except Exception as e:
+            print e
             result['status'] = 0
             result['message'] = '获取信息失败'
             return HttpResponse(json.dumps(result))

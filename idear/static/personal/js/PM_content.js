@@ -175,7 +175,9 @@ $(function () {
             "plan": plan
         };
         $.post("/idear/PM_content/"+projectId,data,function (result) {
+
             var result = JSON.parse(result);
+            alert(result.message)
             if(result.status){
                 alert("修改成功");
             }
